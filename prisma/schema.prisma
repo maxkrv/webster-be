@@ -1,0 +1,36 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DB_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+generator dbml {
+    provider = "prisma-dbml-generator"
+    output   = "./generated/dbml/schema.dbml"
+}
+
+// ======== ENUMS ========
+
+enum AuthProviderType {
+    EMAIL
+    GOOGLE
+}
+
+model User {
+    id            String           @id @default(cuid()) @map("id")
+    email         String           @unique @map("email")
+    password      String?          @map("password") // Null if using OAuth
+    name          String           @map("name")
+    avatar        String?          @map("avatar")
+    authProvider  AuthProviderType @default(EMAIL) @map("auth_provider")
+    emailVerified Boolean          @default(false) @map("email_verified")
+    createdAt     DateTime         @default(now()) @map("created_at")
+    updatedAt     DateTime         @updatedAt @map("updated_at")
+
+    @@index([email])
+    @@index([name])
+    @@map("user")
+}

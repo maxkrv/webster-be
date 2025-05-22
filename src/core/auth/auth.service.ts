@@ -196,7 +196,7 @@ export class AuthService {
       to: email,
       subject: 'Reset password',
       template: await ResetPasswordLink({
-        link: `${this.configService.get('app').clientUrl}/auth/reset-password/${token}`,
+        link: `${this.configService.get('app').clientUrl}/reset-password/${token}`,
         name: user.name,
       }),
     });
@@ -315,7 +315,7 @@ export class AuthService {
       },
     );
 
-    return `${this.configService.get('app').clientUrl}/auth/activate/${token}`;
+    return `${this.configService.get('app').clientUrl}/activate/${token}`;
   }
 
   private async findRefreshToken(userId: string, token: string) {

@@ -30,7 +30,24 @@ model User {
     createdAt     DateTime         @default(now()) @map("created_at")
     updatedAt     DateTime         @updatedAt @map("updated_at")
 
+    projects Project[] @relation("user_projects")
+
     @@index([email])
     @@index([name])
     @@map("user")
+}
+
+model Project {
+    id         String   @id @default(cuid()) @map("id")
+    name       String   @map("name")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
+    canvas     Json?    @map("canvas")
+    previewUrl String?  @map("preview_url")
+    userId     String   @map("user_id")
+
+    user User @relation("user_projects", references: [id], fields: [userId])
+
+    @@index([name])
+    @@map("project")
 }

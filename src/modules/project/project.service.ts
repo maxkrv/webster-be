@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 import { DatabaseService } from '../../core/db/database.service';
-import { PaginationOptionsDto } from '../../shared/pagination';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { GetManyProjectsDto } from './dto/get-many-projects.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { PaginatedProjects } from './project.entity';
 
@@ -10,18 +11,27 @@ import { PaginatedProjects } from './project.entity';
 export class ProjectService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async getMy(userId: string, dto: PaginationOptionsDto) {
+  async getMy(userId: string, dto: GetManyProjectsDto) {
+    const where: Prisma.ProjectWhereInput = {
+      userId,
+    };
+    if (dto.search) {
+      where.name = {
+        contains: dto.search,
+        mode: 'insensitive',
+      };
+    }
+
     const data = await this.databaseService.project.findMany({
-      where: {
-        userId,
+      where,
+      orderBy: {
+        [dto.sortBy || 'createdAt']: dto.sortOrder || 'desc',
       },
       skip: (dto.page - 1) * dto.limit,
       take: dto.limit,
     });
     const count = await this.databaseService.project.count({
-      where: {
-        userId,
-      },
+      where,
     });
 
     return new PaginatedProjects(data, count, dto);

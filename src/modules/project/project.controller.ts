@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpStatus,
+  Param,
   ParseFilePipeBuilder,
   Patch,
   Post,
@@ -33,8 +34,8 @@ import {
 import { GetCurrentUser } from '../../shared/decorators';
 import { IDDto } from '../../shared/dto/id.dto';
 import { Prefix } from '../../shared/enums/prefix.enum';
-import { PaginationOptionsDto } from '../../shared/pagination';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { GetManyProjectsDto } from './dto/get-many-projects.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { PaginatedProjects, ProjectEntity } from './project.entity';
 import { ProjectService } from './project.service';
@@ -52,7 +53,7 @@ export class ProjectController {
   @ApiOkResponse({ type: PaginatedProjects })
   async getProjects(
     @GetCurrentUser('sub') userId: string,
-    @Query() query: PaginationOptionsDto,
+    @Query() query: GetManyProjectsDto,
   ) {
     return this.projectService.getMy(userId, query);
   }
@@ -62,7 +63,7 @@ export class ProjectController {
   @ApiOkResponse({ type: ProjectEntity })
   async getProjectById(
     @GetCurrentUser('sub') userId: string,
-    @Query() { id }: IDDto,
+    @Param() { id }: IDDto,
   ) {
     return new ProjectEntity(await this.projectService.getById(userId, id));
   }
@@ -72,7 +73,7 @@ export class ProjectController {
   @ApiOkResponse({ type: ProjectEntity })
   async updateProject(
     @GetCurrentUser('sub') userId: string,
-    @Query() { id }: IDDto,
+    @Param() { id }: IDDto,
     @Body() body: UpdateProjectDto,
   ) {
     return new ProjectEntity(
@@ -95,7 +96,7 @@ export class ProjectController {
   @ApiOkResponse({ type: ProjectEntity })
   async deleteProject(
     @GetCurrentUser('sub') userId: string,
-    @Query() { id }: IDDto,
+    @Param() { id }: IDDto,
   ) {
     return new ProjectEntity(await this.projectService.delete(userId, id));
   }
@@ -118,7 +119,7 @@ export class ProjectController {
   @Patch(':id/preview')
   async updatePreview(
     @GetCurrentUser() { sub }: JwtPayload,
-    @Query() { id }: IDDto,
+    @Param() { id }: IDDto,
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addValidator(

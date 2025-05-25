@@ -3,10 +3,12 @@ import { Module } from '@nestjs/common';
 
 import { ApiConfigModule } from '../../config/api-config.module';
 import { ApiConfigService } from '../../config/api-config.service';
+import { FileUploadController } from './file-upload.controller';
 import { FileUploadService } from './file-upload.service';
 
 @Module({
   imports: [ApiConfigModule],
+  controllers: [FileUploadController],
   providers: [
     FileUploadService,
     {
